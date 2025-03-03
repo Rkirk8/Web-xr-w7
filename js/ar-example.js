@@ -4,7 +4,7 @@ const canvas = document.getElementById("renderCanvas");
 // Create the BABYON 3D engine, and attach it to the canvas
 const engine = new BABYLON.Engine(canvas, true);
 // The createScene function
-const createScene = async function () {
+const createScene = async function() {
     // Create a new BABYLON scene, passing in the engine as an argument
     const scene = new BABYLON.Scene(engine);
     
@@ -35,7 +35,7 @@ const createScene = async function () {
     /* MESHES
     ---------------------------------------------------------------------------------------------------- */
     // STEP 1: Create a simple box, and apply a material and a colour to it.
-    const box = BABYLON.MeshBuilder.CreateBox("box", { size: 0.5 }, scene);
+    const box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.5}, scene);
     const boxMat = new BABYLON.StandardMaterial("boxMat");
     boxMat.diffuseColor = new BABYLON.Color3(1, 0.6, 0);
     box.material = boxMat;
@@ -72,66 +72,41 @@ const createScene = async function () {
     // STEP 5: A hit-test is a standard feature in AR that permits a ray to be cast from the device (headset or phone) into the real world, and detect where it intersects with a real-world object. This enables AR apps to place objects on surfaces or walls of the real world (https://immersive-web.github.io/hit-test/). To enable hit-testing, use the enableFeature() method of the featuresManager from the base WebXR experience helper.
     const hitTest = xr.baseExperience.featuresManager.enableFeature(BABYLON.WebXRHitTest, "latest");
     // STEP 6a: Create a marker to show where a hit-test has registered a surface
-    const marker = BABYLON.MeshBuilder.CreateTorus("marker", { diameter: 0.15, thickness: 0.05 }, scene);
+    const marker = BABYLON.MeshBuilder.CreateTorus("marker", {diameter: 0.15, thickness: 0.05}, scene);
     marker.isVisible = false;
     marker.rotationQuaternion = new BABYLON.Quaternion();
     // STEP 6b: Create a variable to store the latest hit-test results
-    let latestHitTestResult = null;
+    let latestHitTestResults = null;
     // STEP 6c: Add an event listener for the hit-test results
     hitTest.onHitTestResultObservable.add((results) => {
         // STEP 6d: If there is a hit-test result, turn on the marker, and extract the position, rotation, and scaling from the hit-test result
         if (results.length) {
             marker.isVisible = true;
             results[0].transformationMatrix.decompose(marker.scaling, marker.rotationQuaternion, marker.position);
-            latestHitTestResult = results[0];
+            latestHitTestResults = results;
         } else {
             // STEP 6e: If there is no hit-test result, turn off the marker and clear the stored results
             marker.isVisible = false;
-            latestHitTestResult = null;
-        }
+            latestHitTestResults = null;
+        };
     });
 
     /* ANCHORS
     ---------------------------------------------------------------------------------------------------- */
     // STEP 7: Anchors are a feature that allow you to place objects in the real world space and have them stay there, even if the observer moves around. To enable anchors, use the enableFeature() method of the featuresManager from the base WebXR experience helper (https://immersive-web.github.io/anchors/).
-    /*const anchors = xr.baseExperience.featuresManager.enableFeatures(BABYLON.WebXRAnchorSys, "latest");
+    const anchors = xr.baseExperience.featuresManager.enableFeature(BABYLON.WebXRAnchorSystem, "latest");
     // STEP 8a: Add event listener for click (and simulate this in the Immersive Web Emulator)
     canvas.addEventListener("click", () => {
-        if (latestHitTestResult && latestHitTestResult.length > 0) {
-            //create anchor
-            anchors.addAnchorPointUsingHitTestResultAsync(latestHitTestResult[0]).then((anchor) => {
-                // STEP 8b: Attach box to anchor
+        if(latestHitTestResults && latestHitTestResults.length > 0) {
+            // Create an anchor
+            anchors.addAnchorPointUsingHitTestResultAsync(latestHitTestResults[0]).then((anchor) => {
+                // STEP 8b: Attach the box to the anchor
                 anchor.attachedNode = box;
             }).catch((error) => {
                 console.log(error);
             });
         };
-
-    });*/
-    //chatgpt code
-    const anchors = xr.baseExperience.featuresManager.enableFeature(
-        BABYLON.WebXRAnchorSystem,
-        "latest"
-    );
-    
-    if (!anchors) {
-        console.error("WebXRAnchorSystem could not be enabled.");
-    } else {
-        // STEP 8a: Add event listener for click (and simulate this in the Immersive Web Emulator)
-        canvas.addEventListener("click", () => {
-            if (latestHitTestResult && latestHitTestResult.length > 0) {
-                // Create anchor
-                anchors.addAnchorPointUsingHitTestResultAsync(latestHitTestResult[0])
-                    .then((anchor) => {
-                        // STEP 8b: Attach box to anchor
-                        anchor.attachedNode = box;
-                    })
-                    .catch((error) => {
-                        console.error("Error adding anchor:", error);
-                    });
-            }
-        });
-    }
+    });
     
     // Return the scene
     return scene;
