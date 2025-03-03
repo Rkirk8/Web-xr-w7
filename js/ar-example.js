@@ -94,7 +94,7 @@ const createScene = async function () {
     /* ANCHORS
     ---------------------------------------------------------------------------------------------------- */
     // STEP 7: Anchors are a feature that allow you to place objects in the real world space and have them stay there, even if the observer moves around. To enable anchors, use the enableFeature() method of the featuresManager from the base WebXR experience helper (https://immersive-web.github.io/anchors/).
-    const anchors = xr.baseExperience.featuresManager.enableFeatures(BABYLON.WebXRAnchorSystem, "latest");
+    /*const anchors = xr.baseExperience.featuresManager.enableFeatures(BABYLON.WebXRAnchorSys, "latest");
     // STEP 8a: Add event listener for click (and simulate this in the Immersive Web Emulator)
     canvas.addEventListener("click", () => {
         if (latestHitTestResult && latestHitTestResult.length > 0) {
@@ -107,7 +107,32 @@ const createScene = async function () {
             });
         };
 
-    });
+    });*/
+    //chatgpt code
+    const anchors = xr.baseExperience.featuresManager.enableFeature(
+        BABYLON.WebXRAnchorSystem,
+        "latest"
+    );
+    
+    if (!anchors) {
+        console.error("WebXRAnchorSystem could not be enabled.");
+    } else {
+        // STEP 8a: Add event listener for click (and simulate this in the Immersive Web Emulator)
+        canvas.addEventListener("click", () => {
+            if (latestHitTestResult && latestHitTestResult.length > 0) {
+                // Create anchor
+                anchors.addAnchorPointUsingHitTestResultAsync(latestHitTestResult[0])
+                    .then((anchor) => {
+                        // STEP 8b: Attach box to anchor
+                        anchor.attachedNode = box;
+                    })
+                    .catch((error) => {
+                        console.error("Error adding anchor:", error);
+                    });
+            }
+        });
+    }
+    
     // Return the scene
     return scene;
 };
