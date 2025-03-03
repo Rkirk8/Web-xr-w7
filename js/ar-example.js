@@ -40,8 +40,17 @@ const createScene = async function() {
     boxMat.diffuseColor = new BABYLON.Color3(1, 0.6, 0);
     box.material = boxMat;
     // STEP 4: Move the box so it is not at your feet
-    
+    box.position.y = 1;
+    box.position.z = 2;
 
+    /*  LAB 2
+    ---------------------------------------------------------------------------------------------------- */
+    const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 0.5 }, scene);
+    const sphereMat = new BABYLON.StandardMaterial("sphereMat");
+    sphereMat.diffuseColor = new BABYLON.Color3(2, 5, 7);
+    sphere.material = sphereMat;
+    sphere.position.y = 2;
+    sphere.position.z = 2;
 
     /* SOUNDS
     ---------------------------------------------------------------------------------------------------- */
@@ -100,7 +109,7 @@ const createScene = async function() {
             // Create an anchor
             anchors.addAnchorPointUsingHitTestResultAsync(latestHitTestResults[0]).then((anchor) => {
                 // STEP 8b: Attach the box to the anchor
-                anchor.attachedNode = box;
+                anchor.attachedNode = sphere;
             }).catch((error) => {
                 console.log(error);
             });
