@@ -35,7 +35,10 @@ const createScene = async function() {
     /* MESHES
     ---------------------------------------------------------------------------------------------------- */
     // STEP 1: Create a simple box, and apply a material and a colour to it.
-    
+    const box = new BABYLON.Mesh("box", { size: 0.5 }, scene);
+    const boxMat = new BABYLON.StandardMaterial("boxMat");
+    boxMat.diffuseColor = new BABYLON.Color3(1, 0.6, 0);
+    box.material = boxMat;
     // STEP 4: Move the box so it is not at your feet
     
 
@@ -51,9 +54,14 @@ const createScene = async function() {
     /* ENABLE AR
     ---------------------------------------------------------------------------------------------------- */
     // STEP 2a: Start a WebXR session (immersive-ar, specifically)
-    
+    const xr = await scene.createDefaultXRExperienceAsync({
+        uiOptions: {
+            sessionMode: "immersive-ar"
+        },
         // STEP 2b: Enable optional features - either all of them with true (boolean), or as an array
-    
+        optionalFeatures: true
+
+    });
     // STEP 3: Commit your code and push it to a server, then try it out with a headset - notice how the orange box is right at your feet - 0, 0, 0 is located on the floor at your feet
 
     // STEP 9: Change the reference space type (in the optionalFeatures array above) to "local-floor", so the box is placed on the floor, not at your feet, or to "local", so the box is placed in front of you, or "unbounded", so the box is placed anywhere in the world.
