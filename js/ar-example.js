@@ -4,7 +4,7 @@ const canvas = document.getElementById("renderCanvas");
 // Create the BABYON 3D engine, and attach it to the canvas
 const engine = new BABYLON.Engine(canvas, true);
 // The createScene function
-const createScene = async function() {
+const createScene = async function () {
     // Create a new BABYLON scene, passing in the engine as an argument
     const scene = new BABYLON.Scene(engine);
     
@@ -35,7 +35,7 @@ const createScene = async function() {
     /* MESHES
     ---------------------------------------------------------------------------------------------------- */
     // STEP 1: Create a simple box, and apply a material and a colour to it.
-    const box = BABYLON.MeshBuilder.CreateBox("box", {size: 0.5}, scene);
+    const box = BABYLON.MeshBuilder.CreateBox("box", { size: 0.5 }, scene);
     const boxMat = new BABYLON.StandardMaterial("boxMat");
     boxMat.diffuseColor = new BABYLON.Color3(1, 0.6, 0);
     box.material = boxMat;
@@ -94,13 +94,20 @@ const createScene = async function() {
     /* ANCHORS
     ---------------------------------------------------------------------------------------------------- */
     // STEP 7: Anchors are a feature that allow you to place objects in the real world space and have them stay there, even if the observer moves around. To enable anchors, use the enableFeature() method of the featuresManager from the base WebXR experience helper (https://immersive-web.github.io/anchors/).
-
+    const anchors = xr.baseExperience.featuresManager.enableFeatures(BABYLON.WebXRAnchors, "latest");
     // STEP 8a: Add event listener for click (and simulate this in the Immersive Web Emulator)
-    
-            // STEP 8b: Attach box to anchor
-            
+    canvas.addEventListener("click", () => {
+        if (latestHitTestResult && latestHitTestResult.length > 0) {
+            //create anchor
+            anchors.addAnchorPointUsingHitTestResultAsync(latestHitTestResult[0]).then((anchor) => {
+                // STEP 8b: Attach box to anchor
+                anchor.attachedNode = box;
+            }).catch((error) => {
+                console.log(error);
+            });
+        };
 
-    
+    });
     // Return the scene
     return scene;
 };
